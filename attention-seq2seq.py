@@ -191,7 +191,7 @@ class AttnDecoderRNN(nn.Module):
         embedded = self.dropout(embedded)
         
         attn_weights = F.softmax(self.attn(torch.cat((embedded[0], hidden[0]), 1)), dim=1) # 输入时刻的词语+上一时刻的隐藏层状态
-        # torch.Size([1, 10])
+        # torch.Size([1, 10]) 注意力完全是基于输出语句的上一时刻词语和上一时刻隐藏层状态的，这里的注意力权重输入语句并没有直接参与训练，而是基于输出语句的句子结构来推测对输入语句的（可能会感兴趣的）位置的关注
         attn_applied = torch.bmm(attn_weights.unsqueeze(0), encoder_outputs.unsqueeze(0)) # 矩阵乘法
         # torch.Size([1, 1, 256]) = torch.Size([1, 1, 10]) * torch.Size([1, 10, 256]) # 结合了注意力的词向量 = 参数 * 每个时刻从encoder收集的状态
         """
